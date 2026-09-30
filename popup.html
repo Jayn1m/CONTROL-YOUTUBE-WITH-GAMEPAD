@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Gamepad TV Settings</title>
+  <style>
+    :root {
+      --yt-red: #ff0000;
+      --yt-red-hover: #cc0000;
+      --bg-primary: #0f0f12;
+      --bg-secondary: #1a1a20;
+      --bg-card: #22222a;
+      --text-primary: #ffffff;
+      --text-secondary: #aaaaaa;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent-green: #2ecc71;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      width: 360px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      padding: 16px 20px;
+      background: linear-gradient(180deg, #222228 0%, #17171d 100%);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--yt-red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 14px rgba(255, 0, 0, 0.5);
+    }
+
+    .brand-text h1 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: #fff;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .badge-v3 {
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ddd;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Controller Status Banner */
+    .status-banner {
+      padding: 10px 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #777;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .status-dot.connected {
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .status-label {
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Content & Options */
+    .content {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .setting-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .setting-item:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .setting-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .setting-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .setting-desc {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #383842;
+      border-radius: 24px;
+      transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    input:checked + .slider {
+      background-color: var(--yt-red);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Slider for Deadzone */
+    .slider-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slider-value {
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 0, 0, 0.2);
+      color: #ff5555;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 0, 0, 0.4);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+
+    input[type=range]:focus {
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: #33333e;
+      border-radius: 3px;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid var(--yt-red);
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -5px;
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+    }
+
+    /* Quick Guide Box */
+    .quick-guide {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .quick-guide-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #ff5555;
+      margin-bottom: 8px;
+    }
+
+    .quick-guide-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 11.5px;
+      color: #ccc;
+    }
+
+    .key-badge {
+      display: inline-block;
+      padding: 1px 5px;
+      background: #333;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 10.5px;
+      color: #fff;
+      margin-right: 4px;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 12px 20px;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .footer a {
+      color: #888;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: #ff5555;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-icon">▶</div>
+      <div class="brand-text">
+        <h1>YouTube Gamepad TV</h1>
+        <span>Leanback Fire TV Experience</span>
+      </div>
+    </div>
+    <span class="badge-v3">MV3</span>
+  </div>
+
+  <!-- Live Controller Status Banner -->
+  <div class="status-banner">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="status-label" id="statusLabel">Scanning for gamepads...</div>
+  </div>
+
+  <!-- Settings Body -->
+  <div class="content">
+    <!-- Master Toggle -->
+    <div class="setting-item">
+      <div class="setting-info">
+        <span class="setting-title">Enable Extension</span>
+        <span class="setting-desc">Activate gamepad controls on YouTube</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="enabledToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Deadzone Slider -->
+    <div class="slider-container">
+      <div class="slider-header">
+        <div class="setting-info">
+          <span class="setting-title">Left Stick Deadzone</span>
+          <span class="setting-desc">Filter stick drift (0.10 - 0.50)</span>
+        </div>
+        <span class="slider-value" id="deadzoneDisplay">0.25</span>
+      </div>
+      <input type="range" id="deadzoneSlider" min="0.10" max="0.50" step="0.05" value="0.25">
+    </div>
+
+    <!-- Auto-Skip Ads -->
+    <div class="setting-item">
+      <div class="setting-info">
+        <span class="setting-title">Auto-Skip Video Ads</span>
+        <span class="setting-desc">Auto-clicks skip ad buttons instantly</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="autoSkipAdsToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="setting-item">
+      <div class="setting-info">
+        <span class="setting-title">Connection Toasts</span>
+        <span class="setting-desc">Show on-screen controller alerts</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toastsToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Quick Controller Reference -->
+    <div class="quick-guide">
+      <div class="quick-guide-title">Controller Quick Map</div>
+      <div class="quick-guide-grid">
+        <div><span class="key-badge">A</span> Select / Play</div>
+        <div><span class="key-badge">B</span> Back / Exit</div>
+        <div><span class="key-badge">X</span> Fullscreen</div>
+        <div><span class="key-badge">Y</span> Search Jump</div>
+        <div><span class="key-badge">LB/RB</span> ±10s Seek</div>
+        <div><span class="key-badge">LT/RT</span> Volume</div>
+        <div><span class="key-badge">START</span> Mute</div>
+        <div><span class="key-badge">SELECT</span> Help Modal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>YouTube Gamepad TV v1.0.0</span>
+    <span>Zero Dependencies</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
