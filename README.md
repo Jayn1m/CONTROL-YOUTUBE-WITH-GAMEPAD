@@ -70,7 +70,7 @@ A production-ready, zero-dependency **Manifest V3** browser extension for Google
 3. Click the **Load unpacked** button in the top-left corner.
 4. Select the directory:
    ```
-   C:\Users\Jayn1m\.gemini\antigravity\scratch\youtube-gamepad-tv
+   C:\Users\Jayn1m\Projects\youtube-gamepad-tv
    ```
 5. Navigate to [youtube.com](https://www.youtube.com).
 6. Connect your controller via USB or Bluetooth and **press any button** to wake the browser Gamepad API.
